@@ -1,10 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PostEntity } from './entities/post.entity';
-import { Post } from './post.interface';
+import { PostNotFoundException } from './exception/post-not-found.exception';
 
 @Injectable()
 export class PostsService {
@@ -30,7 +30,7 @@ export class PostsService {
     if (post) {
       return post;
     }
-    throw new NotFoundException('Post not found');
+    throw new PostNotFoundException();
   }
 
   async update(id: number, updatePostDto: UpdatePostDto) {
@@ -38,14 +38,13 @@ export class PostsService {
     if (post) {
       return post;
     }
-
-    throw new NotFoundException('Post not found');
+    throw new PostNotFoundException();
   }
 
   async remove(id: number) {
     const post = await this.postsRepository.delete(id);
     if (!post.affected) {
-      throw new NotFoundException('Post not found');
+      throw new PostNotFoundException();
     }
     return post;
   }
